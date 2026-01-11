@@ -10,11 +10,13 @@ public class PostService
 {
     private readonly IPostRepository _postRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ImageUploadService _imageUploadService;
 
-    public PostService(IPostRepository postRepository, IUserRepository userRepository)
+    public PostService(IPostRepository postRepository, IUserRepository userRepository, ImageUploadService imageUploadService)
     {
         _postRepository = postRepository;
         _userRepository = userRepository;
+        _imageUploadService = imageUploadService;
     }
 
     public async Task<PostResponse> CreatePostAsync(CreatePostRequest request, int userId)
@@ -32,11 +34,17 @@ public class PostService
         if (string.IsNullOrWhiteSpace(request.Body))
             throw new ApplicationException("Post body cannot be empty");
 
+        string? imageUrl = null;
+        if (request.ImageFile != null)
+        {
+            imageUrl = await _imageUploadService.UploadImageAsync(request.ImageFile);
+        }
+
         var post = new Post
         {
             Title = request.Title,
             Body = request.Body,
-            ImageUrl = request.ImageUrl,
+            ImageUrl = imageUrl,
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -93,9 +101,13 @@ public class PostService
         if (string.IsNullOrWhiteSpace(request.Body))
             throw new ApplicationException("Post body cannot be empty");
 
+        if (request.ImageFile != null)
+        {
+            post.ImageUrl = await _imageUploadService.UploadImageAsync(request.ImageFile);
+        }
+
         post.Title = request.Title;
         post.Body = request.Body;
-        post.ImageUrl = request.ImageUrl;
         post.UpdatedAt = DateTime.UtcNow;
 
         await _postRepository.UpdateAsync(post);
