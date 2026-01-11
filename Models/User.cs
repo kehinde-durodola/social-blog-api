@@ -11,6 +11,8 @@ public class User
     public bool IsBanned { get; set; } = false;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public string? RefreshTokenHash { get; set; }
+    public DateTime? RefreshTokenExpiresAt { get; set; }
 
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }
