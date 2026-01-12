@@ -54,6 +54,9 @@ public class PostsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<PostResponse>> CreatePost([FromForm] CreatePostRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         try
         {
             var userId = _jwtTokenService.ExtractUserId(User);
@@ -79,6 +82,9 @@ public class PostsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<PostResponse>> UpdatePost(int id, [FromForm] UpdatePostRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         try
         {
             var userId = _jwtTokenService.ExtractUserId(User);
