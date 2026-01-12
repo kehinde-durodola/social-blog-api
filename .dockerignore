@@ -1,0 +1,56 @@
+# ============================================
+
+# DOCKER IGNORE FILE
+
+# Files/folders listed here won't be copied into the Docker image
+
+# This speeds up builds and reduces image size
+
+# ============================================
+
+# Build outputs (we rebuild inside Docker anyway)
+
+bin/
+obj/
+
+# Git files (not needed in container)
+
+.git/
+.gitignore
+
+# IDE/Editor files
+
+.vs/
+.vscode/
+_.user
+_.suo
+
+# Development settings (security - contains local secrets)
+
+appsettings.Development.json
+
+# Docker files themselves (not needed inside the container)
+
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation
+
+README.md
+\*.md
+
+# Test files and results
+
+\*.Tests/
+TestResults/
+
+# Logs
+
+logs/
+\*.log
+
+# OS-generated files
+
+Thumbs.db
+.DS_Store
