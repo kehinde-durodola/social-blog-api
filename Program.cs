@@ -1,16 +1,31 @@
+using SocialBlogApi.Core.Extensions;
+using SocialBlogApi.Data;
+using SocialBlogApi.Data.Seeders;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddOpenApi();
+// Add application services (DI container setup)
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+// Run database migrations and seed admin user
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminSeeder>();
+    await seeder.SeedAsync();
 }
 
-app.UseHttpsRedirection();
+// Configure middleware (order matters!)
+app.UseRouting();
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.Run();
+app.MapControllers();
+
+await app.RunAsync();
